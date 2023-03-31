@@ -1,0 +1,375 @@
+Problem
+Alex and Bob are brothers and they both enjoy reading very much. They have widely different tastes on books so they keep their own books separately. However, their father thinks it is good to promote exchanges if they can put their books together. Thus he has bought an one-row bookshelf for them today and put all his sons' books on it in random order. He labeled each position of the bookshelf the owner of the corresponding book ('Alex' or 'Bob').
+
+Unfortunately, Alex and Bob went outside and didn't know what their father did. When they were back, they came to realize the problem: they usually arranged their books in their own orders, but the books seem to be in a great mess on the bookshelf now. They have to sort them right now!!
+
+Each book has its own worth, which is represented by an integer. Books with odd values of worth belong to Alex and the books with even values of worth belong to Bob. Alex has a habit of sorting his books from the left to the right in an increasing order of worths, while Bob prefers to sort his books from the left to the right in a decreasing order of worths.
+
+At the same time, they do not want to change the positions of the labels, so that after they have finished sorting the books according their rules, each book's owner's name should match with the label in its position.
+
+Here comes the problem. A sequence of N values s0, s1, ..., sN-1 is given, which indicates the worths of the books from the left to the right on the bookshelf currently. Please help the brothers to find out the sequence of worths after sorting such that it satisfies the above description.
+
+Input
+The first line of input contains a single integer T, the number of test cases. Each test case starts with a line containing an integer N, the number of books on the bookshelf. The next line contains N integers separated by spaces, representing s0, s1, ..., sN-1, which are the worths of the books.
+
+Output
+For each test case, output one line containing "Case #X: ", followed by t0, t1, ..., tN-1 in order, and separated by spaces. X is the test case number (starting from 1) and t0, t1, ..., tN-1 forms the resulting sequence of worths of the books from the left to the right.
+
+Limits
+Time limit: 30 seconds per test set.
+Memory limit: 1GB.
+1 ≤ T ≤ 30.
+
+Test set 1 - Visible
+1 ≤ N ≤ 100
+-100 ≤ si ≤ 100
+
+Test set 2 - Hidden
+1 ≤ N ≤ 1000
+-1000 ≤ si ≤ 1000
+
+Sample
+Sample Input
+save_alt
+content_copy
+2
+5
+5 2 4 3 1
+7
+-5 -12 87 2 88 20 11
+Sample Output
+save_alt
+content_copy
+Case #1: 1 4 2 3 5
+Case #2: -5 88 11 20 2 -12 87
+
+
+Java SOLUTION::
+import javax.swing.plaf.IconUIResource;
+import java.io.BufferedReader;
+import java.io.IOException;
+import java.io.InputStreamReader;
+import java.math.BigInteger;
+import java.security.spec.RSAOtherPrimeInfo;
+import java.sql.Array;
+import java.sql.SQLIntegrityConstraintViolationException;
+import java.util.*;
+
+
+/** New Things To learn :
+
+ * Number Theory
+ * Dfs and Bfs
+ * Dynamic Programming
+
+ */
+
+public class Solution {
+
+    public static class Pair<K, V> {
+        private final K key;
+        private final V value;
+
+        public Pair(K key, V value) {
+            this.key = key;
+            this.value = value;
+        }
+
+        public K getKey() {
+            return key;
+        }
+
+        public V getValue() {
+            return value;
+        }
+    }
+
+    static class FastReader {
+        BufferedReader br;
+        StringTokenizer st;
+
+        public FastReader() {
+            br = new BufferedReader(
+                    new InputStreamReader(System.in));
+        }
+
+        String next() {
+            while (st == null || !st.hasMoreElements()) {
+                try {
+                    st = new StringTokenizer(br.readLine());
+                } catch (IOException e) {
+                    e.printStackTrace();
+                }
+            }
+            return st.nextToken();
+        }
+
+        int nextInt() {
+            return Integer.parseInt(next());
+        }
+
+        long nextLong() {
+            return Long.parseLong(next());
+        }
+
+        double nextDouble() {
+            return Double.parseDouble(next());
+        }
+
+        String nextLine() {
+            String str = "";
+            try {
+                if (st.hasMoreTokens()) {
+                    str = st.nextToken("\n");
+                } else {
+                    str = br.readLine();
+                }
+            } catch (IOException e) {
+                e.printStackTrace();
+            }
+            return str;
+        }
+    }
+    /***************************************************************************************/
+    /***************************************************************************************/
+
+
+    /**
+     * GCD
+     */
+    public static long gcd(long a, long b) {
+        if (b == 0) {
+            return a;
+
+        }
+        return gcd(b, a % b);
+    }
+
+
+    static long m = (long) 1e9 + 7;
+
+    public static long mulmod(long a, long b) {
+        long res = 0;
+
+        a = a % m;
+
+        while (b > 0) {
+            if ((b & 1) == 1)
+                res = (res + a) % m;
+            a = (a + a) % m;
+            b >>= 1;
+
+        }
+        return res;
+
+    }
+
+    /**
+     * Binary Exponenetiation
+     */
+
+
+    public static long binpow(long a, long b) {
+        long res = 1;
+
+        a = a % m;
+
+        while (b > 0) {
+            if ((b & 1) == 1)
+                res = mulmod(res, a);
+            a = mulmod(a, a);
+            b >>= 1;
+
+        }
+        return res;
+    }
+
+
+    /**
+     * Factorial
+     */
+    static long fact(long n) {
+        long m = (long) 1e9 + 7;
+        if (n == 0)
+            return 1;
+        long res = 1;
+        for (long i = 2; i <= n; i++)
+            res = (res * i) % m;
+        return res % m;
+    }
+
+
+    /**
+     * Lower Bound
+     */
+    static int LowerBound(int[] a, int x) { // x is the target value or key
+        int l = -1, r = a.length;
+        while (l + 1 < r) {
+            int m = (l + r) >>> 1;
+            if (a[m] >= x) r = m;
+            else l = m;
+        }
+        return r;
+    }
+
+    /**
+     * Upper Bound
+     */
+    static int UpperBound(int[] a, int x) {// x is the key or target value
+        int l = -1, r = a.length;
+        while (l + 1 < r) {
+            int m = (l + r) >>> 1;
+            if (a[m] <= x) l = m;
+            else r = m;
+        }
+        return l + 1;
+    }
+
+    /**
+     * nCr
+     */
+    public static long nck(long n, long k) {
+        long r = 1;
+        for (long i = n; i > n - k; i--) {
+            r *= i;
+
+        }
+        for (long i = 2; i <= k; i++) {
+            r /= i;
+        }
+        return r;
+    }
+
+
+    /**
+     * Sieve of Eratosthenes
+     */
+    public static void sieveOfEratosthenes(int n) {
+
+        boolean[] prime = new boolean[n + 1];
+        Arrays.fill(prime, true);
+
+        for (int p = 2; p * p <= n; p++) {
+
+            if (prime[p]) {
+
+                for (int i = p * p; i <= n; i += p)
+                    prime[i] = false;
+            }
+        }
+    }
+
+
+    /**
+     * Prime Check
+     */
+    public static boolean isPrime(long n) {
+        if (n <= 2) {
+            return true;
+        }
+
+        for (int i = 2; i < n / 2; i++) {
+            if (n % i == 0) {
+                return false;
+
+            }
+        }
+        return true;
+    }
+
+    static int kadane(int A[]) {
+        int lsum = A[0], gsum = A[0];
+        for (int i = 1; i < A.length; i++) {
+            lsum = Math.max(lsum + A[i], A[i]);
+            gsum = Math.max(gsum, lsum);
+        }
+        return gsum;
+    }
+    /***************************************************************************************/
+    /***************************************************************************************/
+    /***************************************************************************************/
+
+    // static ArrayList<ArrayList<Integer>> g = new ArrayList<ArrayList<Integer>>();
+
+
+    //static long dp[] = new long[1000001];
+
+
+    public static ArrayList<Integer> adj[];
+    public static ArrayList<Integer> rep = new ArrayList<Integer>();
+    public static ArrayList<ArrayList<Integer>> adjj = new ArrayList<>();
+    public static boolean visited[];
+    public static int calc(int x)
+    {
+        int mn=10,mx=0;
+        while (x>0)
+        {
+            mn=Math.min(mn,x%10);
+            mx=Math.max(mx,x%10);
+            x/=10;
+        }
+        return mx-mn;
+    }
+
+
+    public static void main(String[] args) {
+        //int mod = (int)1e9+7;
+
+
+        FastReader sc = new FastReader();
+
+        int t = sc.nextInt();
+        //int t =1;
+
+
+       for(int z=1;z<=t; z++ ){
+           int k=1;
+
+           int n = sc.nextInt();
+           int  a[] = new int[n];
+           for(int i=0; i<n; i++){
+               a[i] = sc.nextInt();
+
+           }
+
+           for(int i=0; i<n; i++){
+               for(int j=i+1; j<n; j++){
+
+                   if(a[i]%2!=0 && a[j]%2!=0){
+                       if(a[i]>a[j]){
+                           int temp = a[i];
+                           a[i] = a[j];
+                           a[j] = temp;
+                       }
+                   }
+                   if(a[i]%2==0&&a[j]%2==0){
+                       if(a[i]<a[j]){
+                           int temp = a[i];
+                           a[i] = a[j];
+                           a[j] = temp;
+                       }
+                   }
+               }
+           }
+//           for(int i=0; i<n; i++){
+//               for(int j=i+1; j<n; j++){
+//
+//               }
+//           }
+           System.out.print("Case #"+z+":"+" ");
+
+           for(int i=0; i<n; i++){
+               System.out.print(a[i]+" ");
+           }
+           System.out.println();
+
+
+        }
+
+
+    }
+
+
+
+
+}
