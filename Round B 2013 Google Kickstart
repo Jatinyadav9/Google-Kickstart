@@ -1,0 +1,239 @@
+Problem
+Sudoku is a popular single player game. The objective is to fill a 9x9 matrix with digits so that each column, each row, and all 9 non-overlapping 3x3 sub-matrices contain all of the digits from 1 through 9. Each 9x9 matrix is partially completed at the start of game play and typically has a unique solution.
+
+Given a completed N2xN2 Sudoku matrix, your task is to determine whether it is a valid solution. A valid solution must satisfy the following criteria:
+
+Each row contains each number from 1 to N2, once each.
+Each column contains each number from 1 to N2, once each.
+Divide the N2xN2 matrix into N2 non-overlapping NxN sub-matrices. Each sub-matrix contains each number from 1 to N2, once each.
+You don't need to worry about the uniqueness of the problem. Just check if the given matrix is a valid solution.
+
+Input
+The first line of the input gives the number of test cases, T. T test cases follow. Each test case starts with an integer N. The next N2 lines describe a completed Sudoku solution, with each line contains exactly N2 integers. All input integers are positive and less than 1000.
+
+Output
+For each test case, output one line containing "Case #x: y", where x is the case number (starting from 1) and y is "Yes" (quotes for clarity only) if it is a valid solution, or "No" (quotes for clarity only) if it is invalid. Note that the judge is case-sensitive, so answers of "yes" and "no" will not be accepted.
+
+Limits
+Time limit: 30 seconds per test set.
+Memory limit: 1GB.
+1 ≤ T ≤ 100.
+
+Test set 1 - Visible
+N = 3.
+
+Test set 2 - Hidden
+3 ≤ N ≤ 6.
+
+Sample
+Sample Input
+save_alt
+content_copy
+3
+3
+5 3 4 6 7 8 9 1 2
+6 7 2 1 9 5 3 4 8
+1 9 8 3 4 2 5 6 7
+8 5 9 7 6 1 4 2 3
+4 2 6 8 5 3 7 9 1
+7 1 3 9 2 4 8 5 6
+9 6 1 5 3 7 2 8 4
+2 8 7 4 1 9 6 3 5
+3 4 5 2 8 6 1 7 9
+3
+1 2 3 4 5 6 7 8 9
+1 2 3 4 5 6 7 8 9
+1 2 3 4 5 6 7 8 9
+1 2 3 4 5 6 7 8 9
+1 2 3 4 5 6 7 8 9
+1 2 3 4 5 6 7 8 9
+1 2 3 4 5 6 7 8 9
+1 2 3 4 5 6 7 8 9
+1 2 3 4 5 6 7 8 9
+3
+5 3 4 6 7 8 9 1 2
+6 7 2 1 9 5 3 4 8
+1 9 8 3 4 2 5 6 7
+8 5 9 7 6 1 4 2 3
+4 2 6 8 999 3 7 9 1
+7 1 3 9 2 4 8 5 6
+9 6 1 5 3 7 2 8 4
+2 8 7 4 1 9 6 3 5
+3 4 5 2 8 6 1 7 9
+
+Java Code:
+
+
+import javax.swing.plaf.IconUIResource;
+import java.io.BufferedReader;
+import java.io.IOException;
+import java.io.InputStreamReader;
+import java.math.BigInteger;
+import java.security.spec.RSAOtherPrimeInfo;
+import java.sql.Array;
+import java.sql.SQLIntegrityConstraintViolationException;
+import java.util.*;
+
+
+public class Solution {
+
+    public static class Pair<K, V> {
+        private final K key;
+        private final V value;
+
+        public Pair(K key, V value) {
+            this.key = key;
+            this.value = value;
+        }
+
+        public K getKey() {
+            return key;
+        }
+
+        public V getValue() {
+            return value;
+        }
+    }
+
+    static class FastReader {
+        BufferedReader br;
+        StringTokenizer st;
+
+        public FastReader() {
+            br = new BufferedReader(
+                    new InputStreamReader(System.in));
+        }
+
+        String next() {
+            while (st == null || !st.hasMoreElements()) {
+                try {
+                    st = new StringTokenizer(br.readLine());
+                } catch (IOException e) {
+                    e.printStackTrace();
+                }
+            }
+            return st.nextToken();
+        }
+
+        int nextInt() {
+            return Integer.parseInt(next());
+        }
+
+        long nextLong() {
+            return Long.parseLong(next());
+        }
+
+        double nextDouble() {
+            return Double.parseDouble(next());
+        }
+
+        String nextLine() {
+            String str = "";
+            try {
+                if (st.hasMoreTokens()) {
+                    str = st.nextToken("\n");
+                } else {
+                    str = br.readLine();
+                }
+            } catch (IOException e) {
+                e.printStackTrace();
+            }
+            return str;
+        }
+    }
+    public static ArrayList<Integer> adj[];
+    public static ArrayList<Integer> rep = new ArrayList<Integer>();
+    public static ArrayList<ArrayList<Integer>> adjj = new ArrayList<>();
+    public static boolean visited[];
+
+
+
+    public static void main(String[] args) {
+        //int mod = (int)1e9+7;
+
+
+        FastReader sc = new FastReader();
+
+        int t = sc.nextInt();
+        //int t =1;
+
+
+        for (int z = 1; z <= t; z++) {
+            System.out.print("Case #" + z + ":" + " ");
+
+
+            int n = sc.nextInt();
+            int sud[][] = new int[n*n][n*n];
+
+
+            for(int i=0; i<n*n; i++){
+                for(int j=0; j<n*n; j++){
+                    sud[i][j] = sc.nextInt();
+
+                }
+            }
+           // System.out.println("Ip le liya");
+
+            HashSet<Integer> setrow = new HashSet<>();
+            HashSet<Integer> setcol = new HashSet<>();
+
+
+
+           for(int i=1; i<=n*n; i++){
+               setrow.add(i);
+               setcol.add(i);
+           }
+           boolean flag = true;
+
+           for(int i=0; i<n*n; i++){
+               HashSet<Integer> temp  = new HashSet<>(setrow);
+               for(int j=0; j<n*n; j++){
+                   if(temp.contains(sud[i][j])){
+                       temp.remove(sud[i][j]);
+
+                   }else{
+                       //System.out.println("for row"+" "+i+"for col"+" "+j+"flag is false");
+                       flag = false;
+                       break;
+                   }
+
+
+               }
+               if(flag==false){
+                   break;
+               }
+           }
+            for(int i=0; i<n*n; i++){
+                HashSet<Integer> temp  = new HashSet<>(setcol);
+                for(int j=0; j<n*n; j++){
+                    if(temp.contains(sud[j][i])){
+                        temp.remove(sud[j][i]);
+
+                    }else{
+                       // System.out.println("for row"+" "+i+"for col"+" "+j+"flag is false");
+                        flag = false;
+                        break;
+
+                    }
+
+
+                }
+                if(flag==false){
+                    break;
+                }
+            }
+           if(flag) System.out.println("YES");
+           else System.out.println("NO");
+
+
+
+
+
+
+        }
+
+
+    }
+
+
+}
